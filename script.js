@@ -450,6 +450,44 @@ orderHistoryModal.addEventListener('click', (e) => {
     if (e.target === orderHistoryModal) closeOrderHistory();
 });
 
+// ========== Edit Profile ==========
+const editProfileModal = document.getElementById('editProfileModal');
+
+function openEditProfile() {
+    if (!currentUser) return;
+    document.getElementById('profileUsername').value = currentUser.displayName || '';
+    document.getElementById('profileBirthday').value = currentUser.birthday || '';
+    document.getElementById('profileTelegram').value = currentUser.telegram || '';
+    document.getElementById('profileViber').value = currentUser.viber || '';
+    document.getElementById('profileWhatsApp').value = currentUser.whatsapp || '';
+    editProfileModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEditProfile() {
+    editProfileModal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function saveProfile(e) {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    currentUser.displayName = document.getElementById('profileUsername').value.trim() || currentUser.displayName;
+    currentUser.birthday = document.getElementById('profileBirthday').value;
+    currentUser.telegram = document.getElementById('profileTelegram').value.trim();
+    currentUser.viber = document.getElementById('profileViber').value.trim();
+    currentUser.whatsapp = document.getElementById('profileWhatsApp').value.trim();
+
+    saveUser();
+    updateUserUI();
+    closeEditProfile();
+}
+
+editProfileModal.addEventListener('click', (e) => {
+    if (e.target === editProfileModal) closeEditProfile();
+});
+
 // ========== Shake Animation ==========
 function shakeElement(el) {
     el.style.animation = 'none';
@@ -486,6 +524,7 @@ document.addEventListener('keydown', (e) => {
         closeOrder();
         closeAddFunds();
         closeOrderHistory();
+        closeEditProfile();
     }
 });
 
