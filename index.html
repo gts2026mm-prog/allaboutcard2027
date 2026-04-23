@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All About Card - Gift Cards, Visa Cards & Game Top-Up</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Login Screen -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="logo.svg" alt="All About Card" height="56">
+        </div>
+        <h1>Welcome to All About Card</h1>
+        <p class="login-subtitle">Login with your Telegram account to continue</p>
+        <div class="telegram-widget-wrap" id="telegramWidgetWrap">
+            <script async src="https://telegram.org/js/telegram-widget.js?22"
+                data-telegram-login="AllAboutCardBot"
+                data-size="large"
+                data-radius="8"
+                data-onauth="onTelegramAuth(user)"
+                data-request-access="write">
+            </script>
+        </div>
+        <p class="login-footer">Fast delivery, pay with USDT (BEP-20)</p>
+    </div>
+</div>
+
+<!-- Header / Navbar -->
+<header class="header">
+    <div class="container header-inner">
+        <a href="#" class="logo">
+            <img src="logo.svg" alt="All About Card" class="logo-img" height="48">
+        </a>
+        <nav class="nav">
+            <a href="#products">Products</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="header-right">
+            <!-- Wallet Balance -->
+            <div class="wallet-balance" id="walletBalance" onclick="openAddFunds()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="M16 12h.01"/>
+                    <path d="M2 10h20"/>
+                </svg>
+                <span id="balanceDisplay">$0.00</span>
+                <span class="add-funds-plus">+</span>
+            </div>
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <button class="user-avatar-btn" onclick="toggleUserDropdown()">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-user-info">
+                        <div class="user-avatar-lg" id="userAvatarLg">U</div>
+                        <div>
+                            <strong id="dropdownName">User</strong>
+                            <small id="dropdownUsername">@username</small>
+                        </div>
+                    </div>
+                    <div class="dropdown-balance">
+                        <span>Balance</span>
+                        <strong id="dropdownBalance">$0.00</strong>
+                    </div>
+                    <button class="dropdown-item" onclick="openAddFunds(); toggleUserDropdown();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        Add Funds
+                    </button>
+                    <button class="dropdown-item" onclick="openOrderHistory(); toggleUserDropdown();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/>
+                        </svg>
+                        Order History
+                    </button>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item text-danger" onclick="logout()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                        </svg>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+        <button class="mobile-menu-btn" id="menuBtn" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container hero-content">
+        <h1>Buy Gift Cards, Visa Cards &amp; Game Top-Up <span class="highlight">Instantly</span></h1>
+        <p class="hero-subtitle">iTunes, Visa, Google Play, Amazon, Mobile Legends, PUBG and more. Fast delivery, pay with USDT (BEP-20).</p>
+        <div class="hero-buttons">
+            <a href="#products" class="btn btn-primary btn-lg">Shop Now</a>
+            <button class="btn btn-outline btn-lg" onclick="openAddFunds()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
+                </svg>
+                Add Funds
+            </button>
+        </div>
+    </div>
+    <div class="hero-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="section" id="products">
+    <div class="container">
+        <h2 class="section-title">Our Products</h2>
+        <p class="section-subtitle">Choose from our wide selection of gift cards and prepaid cards</p>
+
+        <!-- Category Filter -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="visa">Visa Cards</button>
+            <button class="filter-btn" data-filter="itunes">iTunes</button>
+            <button class="filter-btn" data-filter="gift">Gift Cards</button>
+            <button class="filter-btn" data-filter="topup">Game Top-Up</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+
+            <!-- Visa Cards -->
+            <div class="product-card" data-category="visa">
+                <div class="product-badge">Popular</div>
+                <div class="product-icon visa-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#1A1F71"/>
+                        <text x="40" y="32" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold" font-family="Inter,sans-serif">VISA</text>
+                    </svg>
+                </div>
+                <h3>Visa Prepaid Card</h3>
+                <p class="product-desc">Virtual Visa card for online shopping worldwide</p>
+                <div class="product-prices">
+                    <span class="price-tag">$25</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                    <span class="price-tag">$200</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Visa Prepaid Card')">Buy Now</button>
+            </div>
+
+            <div class="product-card" data-category="visa">
+                <div class="product-icon visa-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#0A2540"/>
+                        <text x="40" y="32" text-anchor="middle" fill="#FFD700" font-size="16" font-weight="bold" font-family="Inter,sans-serif">VISA</text>
+                    </svg>
+                </div>
+                <h3>Visa Gold Card</h3>
+                <p class="product-desc">Premium virtual Visa for higher limits</p>
+                <div class="product-prices">
+                    <span class="price-tag">$200</span>
+                    <span class="price-tag">$500</span>
+                    <span class="price-tag">$1000</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Visa Gold Card')">Buy Now</button>
+            </div>
+
+            <!-- iTunes -->
+            <div class="product-card" data-category="itunes">
+                <div class="product-badge hot">Hot</div>
+                <div class="product-icon itunes-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="linear-gradient(135deg,#FC3C44,#8B5CF6)"/>
+                        <rect width="80" height="50" rx="6" fill="#FC3C44"/>
+                        <text x="40" y="22" text-anchor="middle" fill="#fff" font-size="9" font-weight="600" font-family="Inter,sans-serif">iTunes</text>
+                        <text x="40" y="38" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7" font-family="Inter,sans-serif">Gift Card</text>
+                    </svg>
+                </div>
+                <h3>iTunes Gift Card (US)</h3>
+                <p class="product-desc">For App Store, Apple Music, iCloud & more</p>
+                <div class="product-prices">
+                    <span class="price-tag">$10</span>
+                    <span class="price-tag">$25</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('iTunes Gift Card (US)')">Buy Now</button>
+            </div>
+
+            <div class="product-card" data-category="itunes">
+                <div class="product-icon itunes-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#8B5CF6"/>
+                        <text x="40" y="22" text-anchor="middle" fill="#fff" font-size="9" font-weight="600" font-family="Inter,sans-serif">iTunes</text>
+                        <text x="40" y="38" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7" font-family="Inter,sans-serif">UK / EU</text>
+                    </svg>
+                </div>
+                <h3>iTunes Gift Card (UK/EU)</h3>
+                <p class="product-desc">Works in UK & European App Stores</p>
+                <div class="product-prices">
+                    <span class="price-tag">£10</span>
+                    <span class="price-tag">£25</span>
+                    <span class="price-tag">£50</span>
+                    <span class="price-tag">€25</span>
+                    <span class="price-tag">€50</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('iTunes Gift Card (UK/EU)')">Buy Now</button>
+            </div>
+
+            <!-- Other Gift Cards -->
+            <div class="product-card" data-category="gift">
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#34A853"/>
+                        <text x="40" y="22" text-anchor="middle" fill="#fff" font-size="8" font-weight="600" font-family="Inter,sans-serif">Google</text>
+                        <text x="40" y="36" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8" font-family="Inter,sans-serif">Play</text>
+                    </svg>
+                </div>
+                <h3>Google Play Card</h3>
+                <p class="product-desc">For apps, games, movies & more on Google Play</p>
+                <div class="product-prices">
+                    <span class="price-tag">$10</span>
+                    <span class="price-tag">$25</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Google Play Card')">Buy Now</button>
+            </div>
+
+            <div class="product-card" data-category="gift">
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#FF9900"/>
+                        <text x="40" y="30" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="Inter,sans-serif">amazon</text>
+                    </svg>
+                </div>
+                <h3>Amazon Gift Card</h3>
+                <p class="product-desc">Shop millions of items on Amazon</p>
+                <div class="product-prices">
+                    <span class="price-tag">$25</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                    <span class="price-tag">$200</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Amazon Gift Card')">Buy Now</button>
+            </div>
+
+            <div class="product-card" data-category="gift">
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#00B4D8"/>
+                        <text x="40" y="22" text-anchor="middle" fill="#fff" font-size="8" font-weight="600" font-family="Inter,sans-serif">Steam</text>
+                        <text x="40" y="36" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="8" font-family="Inter,sans-serif">Wallet</text>
+                    </svg>
+                </div>
+                <h3>Steam Wallet Card</h3>
+                <p class="product-desc">Add funds to your Steam wallet for games</p>
+                <div class="product-prices">
+                    <span class="price-tag">$20</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Steam Wallet Card')">Buy Now</button>
+            </div>
+
+            <div class="product-card" data-category="gift">
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#E50914"/>
+                        <text x="40" y="32" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="Inter,sans-serif">NETFLIX</text>
+                    </svg>
+                </div>
+                <h3>Netflix Gift Card</h3>
+                <p class="product-desc">Stream movies & shows with Netflix credit</p>
+                <div class="product-prices">
+                    <span class="price-tag">$25</span>
+                    <span class="price-tag">$50</span>
+                    <span class="price-tag">$100</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Netflix Gift Card')">Buy Now</button>
+            </div>
+
+            <!-- Game Top-Up -->
+            <div class="product-card" data-category="topup">
+                <div class="product-badge hot">Hot</div>
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#1C1E6E"/>
+                        <text x="40" y="20" text-anchor="middle" fill="#FFD700" font-size="8" font-weight="800" font-family="Inter,sans-serif">MOBILE</text>
+                        <text x="40" y="32" text-anchor="middle" fill="#FFD700" font-size="8" font-weight="800" font-family="Inter,sans-serif">LEGENDS</text>
+                        <text x="40" y="44" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="6" font-family="Inter,sans-serif">Diamonds</text>
+                    </svg>
+                </div>
+                <h3>Mobile Legends Diamonds</h3>
+                <p class="product-desc">Top up diamonds for your MLBB account instantly</p>
+                <div class="product-prices">
+                    <span class="price-tag">86 Dias</span>
+                    <span class="price-tag">172 Dias</span>
+                    <span class="price-tag">257 Dias</span>
+                    <span class="price-tag">706 Dias</span>
+                    <span class="price-tag">2195 Dias</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('Mobile Legends Diamonds')">Top Up Now</button>
+            </div>
+
+            <div class="product-card" data-category="topup">
+                <div class="product-badge">Popular</div>
+                <div class="product-icon">
+                    <svg viewBox="0 0 80 50" width="80" height="50">
+                        <rect width="80" height="50" rx="6" fill="#F2A900"/>
+                        <text x="40" y="22" text-anchor="middle" fill="#fff" font-size="10" font-weight="800" font-family="Inter,sans-serif">PUBG</text>
+                        <text x="40" y="36" text-anchor="middle" fill="#fff" font-size="7" font-weight="600" font-family="Inter,sans-serif">MOBILE</text>
+                        <text x="40" y="46" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="6" font-family="Inter,sans-serif">UC</text>
+                    </svg>
+                </div>
+                <h3>PUBG Mobile UC</h3>
+                <p class="product-desc">Top up Unknown Cash (UC) for PUBG Mobile</p>
+                <div class="product-prices">
+                    <span class="price-tag">60 UC</span>
+                    <span class="price-tag">325 UC</span>
+                    <span class="price-tag">660 UC</span>
+                    <span class="price-tag">1800 UC</span>
+                    <span class="price-tag">8100 UC</span>
+                </div>
+                <button class="btn btn-primary btn-buy" onclick="openOrder('PUBG Mobile UC')">Top Up Now</button>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section section-alt" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Get your card in 3 simple steps</p>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Add Funds</h3>
+                <p>Deposit USDT (BEP-20) to your account wallet balance</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Choose Your Card</h3>
+                <p>Browse our collection and select the card and amount you want</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Instant Delivery</h3>
+                <p>Pay from your balance and receive your card code instantly</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section section-alt" id="contact">
+    <div class="container">
+        <h2 class="section-title">Contact Us</h2>
+        <p class="section-subtitle">Have questions? Reach out to us anytime</p>
+        <div class="contact-grid">
+            <a href="#" class="contact-card">
+                <div class="contact-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2">
+                        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+                    </svg>
+                </div>
+                <h3>Telegram</h3>
+                <p>@AllAboutCard</p>
+            </a>
+            <a href="#" class="contact-card">
+                <div class="contact-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                </div>
+                <h3>Email</h3>
+                <p>support@allaboutcard.com</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container footer-inner">
+        <div class="footer-logo">
+            <img src="logo.svg" alt="All About Card" height="36">
+        </div>
+        <p>&copy; 2026 All About Card. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- Order Modal (Multi-Step) -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal modal-order">
+        <button class="modal-close" onclick="closeOrder()">&times;</button>
+
+        <!-- Step Indicator -->
+        <div class="steps-indicator">
+            <div class="step-dot active" data-step="1"><span>1</span><small>Select</small></div>
+            <div class="step-line"></div>
+            <div class="step-dot" data-step="2"><span>2</span><small>Confirm</small></div>
+        </div>
+
+        <!-- Step 1: Select Product & Amount -->
+        <div class="modal-step active" id="step1">
+            <h2>Select Your Card</h2>
+            <p class="step-product-name" id="modalProductName"></p>
+            <div class="form-group">
+                <label>Choose Amount</label>
+                <div class="amount-grid" id="amountGrid"></div>
+            </div>
+            <div class="balance-info-bar">
+                <span>Your Balance:</span>
+                <strong id="modalBalance">$0.00</strong>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="goToStep(2)">Continue</button>
+        </div>
+
+        <!-- Step 2: Confirm & Pay from Balance -->
+        <div class="modal-step" id="step2">
+            <h2>Confirm Purchase</h2>
+            <div class="payment-summary">
+                <div class="summary-row">
+                    <span>Product</span>
+                    <strong id="summaryProduct"></strong>
+                </div>
+                <div class="summary-row">
+                    <span>Amount</span>
+                    <strong id="summaryAmount" class="summary-highlight"></strong>
+                </div>
+                <div class="summary-row">
+                    <span>Price</span>
+                    <strong id="summaryPrice" class="summary-highlight"></strong>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-row">
+                    <span>Your Balance</span>
+                    <strong id="summaryBalance"></strong>
+                </div>
+                <div class="summary-row">
+                    <span>After Purchase</span>
+                    <strong id="summaryRemaining"></strong>
+                </div>
+            </div>
+            <div id="insufficientWarning" class="insufficient-warning" style="display:none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                </svg>
+                Insufficient balance. Please add funds first.
+            </div>
+            <div class="step-buttons">
+                <button class="btn btn-outline" onclick="goToStep(1)">Back</button>
+                <button class="btn btn-primary" id="confirmPurchaseBtn" onclick="confirmPurchase()">Pay from Balance</button>
+                <button class="btn btn-telegram" id="addFundsInsteadBtn" onclick="closeOrder(); openAddFunds();" style="display:none;">Add Funds</button>
+            </div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="modal-step" id="stepSuccess">
+            <div class="success-screen">
+                <div class="success-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                </div>
+                <h2>Purchase Successful!</h2>
+                <p>Your order has been placed. We'll deliver your card code shortly.</p>
+                <p class="success-contact">Check your Telegram for delivery.</p>
+                <button class="btn btn-primary btn-block" onclick="closeOrder()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Funds Modal -->
+<div class="modal-overlay" id="addFundsModal">
+    <div class="modal modal-order">
+        <button class="modal-close" onclick="closeAddFunds()">&times;</button>
+
+        <!-- Add Funds Step 1: Amount -->
+        <div class="modal-step active" id="fundsStep1">
+            <h2>Add Funds</h2>
+            <p class="step-desc">Deposit USDT to your account balance</p>
+            <div class="current-balance-box">
+                <span>Current Balance</span>
+                <strong id="fundsCurrentBalance">$0.00</strong>
+            </div>
+            <div class="form-group">
+                <label>Amount to Deposit (USD)</label>
+                <div class="deposit-amount-grid">
+                    <div class="amount-option" onclick="selectDeposit(this, 10)">$10</div>
+                    <div class="amount-option" onclick="selectDeposit(this, 25)">$25</div>
+                    <div class="amount-option" onclick="selectDeposit(this, 50)">$50</div>
+                    <div class="amount-option" onclick="selectDeposit(this, 100)">$100</div>
+                    <div class="amount-option" onclick="selectDeposit(this, 200)">$200</div>
+                    <div class="amount-option" onclick="selectDeposit(this, 500)">$500</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Or enter custom amount</label>
+                <input type="number" id="customDepositAmount" placeholder="Enter amount in USD" min="1">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="goToFundsStep(2)">Continue to Payment</button>
+        </div>
+
+        <!-- Add Funds Step 2: Pay -->
+        <div class="modal-step" id="fundsStep2">
+            <h2>Send Payment</h2>
+            <div class="payment-summary">
+                <div class="summary-row">
+                    <span>Deposit Amount</span>
+                    <strong id="fundsSummaryAmount" class="summary-highlight"></strong>
+                </div>
+            </div>
+            <div class="payment-method-box">
+                <div class="payment-method-header">
+                    <svg viewBox="0 0 40 40" width="36" height="36">
+                        <circle cx="20" cy="20" r="18" fill="#26A17B"/>
+                        <text x="20" y="26" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold" font-family="Inter,sans-serif">&#x20AE;</text>
+                    </svg>
+                    <div>
+                        <strong>USDT (BEP-20)</strong>
+                        <small>BNB Smart Chain</small>
+                    </div>
+                </div>
+                <label class="wallet-label">Send exact amount to this address:</label>
+                <div class="wallet-address-modal">
+                    <code id="fundsWalletAddress">0xYOUR_BSC_USDT_ADDRESS_HERE</code>
+                    <button class="copy-btn" onclick="copyFundsAddress()" title="Copy Address">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2"/>
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="payment-warning-sm">
+                    Only send USDT on BSC network. Wrong token or network = lost funds.
+                </div>
+            </div>
+            <div class="step-buttons">
+                <button class="btn btn-outline" onclick="goToFundsStep(1)">Back</button>
+                <button class="btn btn-primary" onclick="goToFundsStep(3)">I've Sent Payment</button>
+            </div>
+        </div>
+
+        <!-- Add Funds Step 3: TX Hash -->
+        <div class="modal-step" id="fundsStep3">
+            <h2>Confirm Deposit</h2>
+            <p class="step-desc">Paste your transaction hash below so we can verify and credit your account.</p>
+            <div class="form-group">
+                <label>Transaction Hash</label>
+                <input type="text" id="fundsTxHash" placeholder="0x..." required>
+            </div>
+            <div class="step-buttons">
+                <button class="btn btn-outline" onclick="goToFundsStep(2)">Back</button>
+                <button class="btn btn-primary" onclick="submitDeposit()">Submit Deposit</button>
+            </div>
+        </div>
+
+        <!-- Add Funds Success -->
+        <div class="modal-step" id="fundsSuccess">
+            <div class="success-screen">
+                <div class="success-icon">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <path d="M22 4L12 14.01l-3-3"/>
+                    </svg>
+                </div>
+                <h2>Deposit Submitted!</h2>
+                <p>Your deposit of <strong id="fundsSuccessAmount"></strong> is being verified.</p>
+                <p class="success-contact">Your balance will be updated after confirmation.</p>
+                <button class="btn btn-primary btn-block" onclick="closeAddFunds()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order History Modal -->
+<div class="modal-overlay" id="orderHistoryModal">
+    <div class="modal modal-order">
+        <button class="modal-close" onclick="closeOrderHistory()">&times;</button>
+        <h2>Order History</h2>
+        <div id="orderHistoryList" class="order-history-list">
+            <p class="empty-history">No orders yet. Start shopping!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+    <a href="#products" onclick="closeMobileNav()">Products</a>
+    <a href="#how-it-works" onclick="closeMobileNav()">How It Works</a>
+    <a href="#contact" onclick="closeMobileNav()">Contact</a>
+    <a href="#" onclick="closeMobileNav(); openAddFunds();">Add Funds</a>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
