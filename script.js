@@ -19,28 +19,47 @@ const priceMap = {
     '£10': 13, '£25': 32, '£50': 64, '€25': 28, '€50': 55,
 };
 
-// ========== User System (No Login) ==========
+// ========== Google Login Config ==========
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your Client ID
+
+// ========== User System ==========
 let currentUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
 
-function ensureUser() {
-    if (!currentUser) {
-        currentUser = {
-            telegramId: 'guest',
-            username: 'guest',
-            displayName: 'Guest',
-            photoUrl: '',
-            balance: 0,
-            orders: [],
-            deposits: [],
-            joinedAt: new Date().toISOString()
-        };
-        saveUser();
+function handleGoogleLogin(response) {
+    // Decode JWT token from Google
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+
+    currentUser = {
+        googleId: payload.sub,
+        username: payload.email,
+        displayName: payload.name,
+        photoUrl: payload.picture || '',
+        balance: 0,
+        orders: [],
+        deposits: [],
+        joinedAt: new Date().toISOString()
+    };
+
+    // Check if returning user (restore balance & history)
+    const saved = localStorage.getItem('aac_user_' + currentUser.googleId);
+    if (saved) {
+        const savedData = JSON.parse(saved);
+        currentUser.balance = savedData.balance || 0;
+        currentUser.orders = savedData.orders || [];
+        currentUser.deposits = savedData.deposits || [];
+        currentUser.joinedAt = savedData.joinedAt || currentUser.joinedAt;
     }
+
+    saveUser();
+    initApp();
 }
 
 function saveUser() {
     if (!currentUser) return;
     localStorage.setItem('aac_user', JSON.stringify(currentUser));
+    if (currentUser.googleId) {
+        localStorage.setItem('aac_user_' + currentUser.googleId, JSON.stringify(currentUser));
+    }
 }
 
 function logout() {
@@ -50,9 +69,32 @@ function logout() {
 }
 
 function initApp() {
-    ensureUser();
+    if (!currentUser) {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        initGoogleLogin();
+        return;
+    }
+    document.getElementById('loginScreen').classList.add('hidden');
     updateBalanceUI();
     updateUserUI();
+}
+
+function initGoogleLogin() {
+    if (typeof google === 'undefined') {
+        setTimeout(initGoogleLogin, 200);
+        return;
+    }
+    google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleLogin
+    });
+    google.accounts.id.renderButton(document.getElementById('googleLoginBtn'), {
+        theme: 'outline',
+        size: 'large',
+        shape: 'rectangular',
+        width: 300,
+        text: 'signin_with'
+    });
 }
 
 function updateBalanceUI() {
@@ -65,10 +107,19 @@ function updateBalanceUI() {
 function updateUserUI() {
     if (!currentUser) return;
     const initial = currentUser.displayName.charAt(0).toUpperCase();
-    document.getElementById('userAvatar').textContent = initial;
-    document.getElementById('userAvatarLg').textContent = initial;
+    const avatarEl = document.getElementById('userAvatar');
+    const avatarLgEl = document.getElementById('userAvatarLg');
+
+    if (currentUser.photoUrl) {
+        avatarEl.innerHTML = `<img src="${currentUser.photoUrl}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        avatarLgEl.innerHTML = `<img src="${currentUser.photoUrl}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    } else {
+        avatarEl.textContent = initial;
+        avatarLgEl.textContent = initial;
+    }
+
     document.getElementById('dropdownName').textContent = currentUser.displayName;
-    document.getElementById('dropdownUsername').textContent = '@' + currentUser.username;
+    document.getElementById('dropdownUsername').textContent = currentUser.username;
 }
 
 // ========== User Dropdown ==========
@@ -126,7 +177,7 @@ function getPrice(amount) {
 }
 
 function openOrder(productName) {
-    ensureUser();
+    if (!currentUser) return;
 
     selectedProduct = productName;
     selectedAmount = '';
@@ -256,7 +307,7 @@ let depositAmount = 0;
 let fundsCurrentStep = 1;
 
 function openAddFunds() {
-    ensureUser();
+    if (!currentUser) return;
 
     depositAmount = 0;
     fundsCurrentStep = 1;
@@ -361,7 +412,7 @@ function copyFundsAddress() {
 const orderHistoryModal = document.getElementById('orderHistoryModal');
 
 function openOrderHistory() {
-    ensureUser();
+    if (!currentUser) return;
 
     const list = document.getElementById('orderHistoryList');
 
