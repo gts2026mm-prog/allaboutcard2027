@@ -1,32 +1,7 @@
 // ========== Sample Data ==========
 const ADMIN_CREDS = { username: 'admin', password: 'admin123' };
 
-let orders = [
-    { id: 'ORD-001', customer: 'Ko Zaw', contact: '@kozaw_mm', product: 'iTunes Gift Card (US)', amount: '$50', txHash: '0x8f3a...b2c1', status: 'completed', date: '2026-04-23' },
-    { id: 'ORD-002', customer: 'Ma Hla', contact: 'mahla@gmail.com', product: 'Visa Prepaid Card', amount: '$100', txHash: '0x1d4e...a7f3', status: 'completed', date: '2026-04-23' },
-    { id: 'ORD-003', customer: 'Aung Ko', contact: '@aungko99', product: 'Google Play Card', amount: '$25', txHash: '0x6b2c...d4e8', status: 'confirmed', date: '2026-04-22' },
-    { id: 'ORD-004', customer: 'Su Mon', contact: '@sumon_card', product: 'Steam Wallet Card', amount: '$50', txHash: '0xaa12...ff90', status: 'confirmed', date: '2026-04-22' },
-    { id: 'ORD-005', customer: 'Ye Wint', contact: 'yewint@mail.com', product: 'Netflix Gift Card', amount: '$25', txHash: '', status: 'pending', date: '2026-04-22' },
-    { id: 'ORD-006', customer: 'Nay Chi', contact: '@naychi_mm', product: 'iTunes Gift Card (US)', amount: '$100', txHash: '0x3f7d...c1b5', status: 'completed', date: '2026-04-21' },
-    { id: 'ORD-007', customer: 'Min Thu', contact: '@minthu', product: 'Amazon Gift Card', amount: '$200', txHash: '', status: 'pending', date: '2026-04-21' },
-    { id: 'ORD-008', customer: 'Phyo Wai', contact: 'phyowai@gmail.com', product: 'Visa Gold Card', amount: '$500', txHash: '0x9e2a...b8d4', status: 'completed', date: '2026-04-20' },
-    { id: 'ORD-009', customer: 'Htet Aung', contact: '@htetaung', product: 'iTunes Gift Card (UK/EU)', amount: '£50', txHash: '0x5c3d...e9a1', status: 'completed', date: '2026-04-20' },
-    { id: 'ORD-010', customer: 'Thet Naing', contact: '@thetnaing', product: 'Visa Prepaid Card', amount: '$25', txHash: '', status: 'cancelled', date: '2026-04-19' },
-    { id: 'ORD-011', customer: 'Ko Zaw', contact: '@kozaw_mm', product: 'Google Play Card', amount: '$50', txHash: '0x7a8b...f2c3', status: 'completed', date: '2026-04-19' },
-    { id: 'ORD-012', customer: 'Wai Yan', contact: 'waiyan@gmail.com', product: 'Steam Wallet Card', amount: '$100', txHash: '0xbb44...d6e7', status: 'completed', date: '2026-04-18' },
-    { id: 'ORD-013', customer: 'Ma Hla', contact: 'mahla@gmail.com', product: 'Netflix Gift Card', amount: '$50', txHash: '0xcc55...a3b2', status: 'completed', date: '2026-04-18' },
-    { id: 'ORD-014', customer: 'Kyaw Soe', contact: '@kyawsoe', product: 'Amazon Gift Card', amount: '$100', txHash: '0xdd66...c4d5', status: 'completed', date: '2026-04-17' },
-    { id: 'ORD-015', customer: 'Aung Ko', contact: '@aungko99', product: 'iTunes Gift Card (US)', amount: '$25', txHash: '', status: 'pending', date: '2026-04-17' },
-    { id: 'ORD-016', customer: 'Su Mon', contact: '@sumon_card', product: 'Visa Prepaid Card', amount: '$200', txHash: '0xee77...b5c6', status: 'completed', date: '2026-04-16' },
-    { id: 'ORD-017', customer: 'Nay Chi', contact: '@naychi_mm', product: 'Google Play Card', amount: '$100', txHash: '0xff88...a6b7', status: 'completed', date: '2026-04-16' },
-    { id: 'ORD-018', customer: 'Lin Htet', contact: '@linhtet', product: 'Visa Gold Card', amount: '$200', txHash: '', status: 'pending', date: '2026-04-15' },
-    { id: 'ORD-019', customer: 'Ye Wint', contact: 'yewint@mail.com', product: 'iTunes Gift Card (US)', amount: '$50', txHash: '0x1199...c7d8', status: 'completed', date: '2026-04-15' },
-    { id: 'ORD-020', customer: 'Ko Zaw', contact: '@kozaw_mm', product: 'Amazon Gift Card', amount: '$50', txHash: '0x22aa...d8e9', status: 'completed', date: '2026-04-14' },
-    { id: 'ORD-021', customer: 'Min Thu', contact: '@minthu', product: 'Visa Prepaid Card', amount: '$50', txHash: '0x33bb...e9f0', status: 'completed', date: '2026-04-14' },
-    { id: 'ORD-022', customer: 'Phyo Wai', contact: 'phyowai@gmail.com', product: 'Steam Wallet Card', amount: '$20', txHash: '0x44cc...f0a1', status: 'completed', date: '2026-04-13' },
-    { id: 'ORD-023', customer: 'Htet Aung', contact: '@htetaung', product: 'Netflix Gift Card', amount: '$100', txHash: '0x55dd...a1b2', status: 'completed', date: '2026-04-13' },
-    { id: 'ORD-024', customer: 'Wai Yan', contact: 'waiyan@gmail.com', product: 'iTunes Gift Card (UK/EU)', amount: '€50', txHash: '0x66ee...b2c3', status: 'completed', date: '2026-04-12' },
-];
+let orders = [];
 
 let products = [
     { id: 1, name: 'Visa Prepaid Card', category: 'visa', prices: ['$25', '$50', '$100', '$200'], stock: 150, status: 'active' },

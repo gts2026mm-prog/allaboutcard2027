@@ -24,7 +24,6 @@ let currentUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
 
 // Telegram Login Widget callback
 function onTelegramAuth(user) {
-    // user object from Telegram: { id, first_name, last_name, username, photo_url, auth_date, hash }
     const username = user.username || String(user.id);
     const displayName = [user.first_name, user.last_name].filter(Boolean).join(' ') || username;
 
