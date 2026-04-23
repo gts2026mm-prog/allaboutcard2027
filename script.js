@@ -22,16 +22,22 @@ const priceMap = {
 // ========== User / Auth System ==========
 let currentUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
 
-// Telegram Login Widget callback
-function onTelegramAuth(user) {
-    const username = user.username || String(user.id);
-    const displayName = [user.first_name, user.last_name].filter(Boolean).join(' ') || username;
+// Telegram Login - check URL params on redirect back
+function checkTelegramRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) return;
+
+    const username = params.get('username') || id;
+    const firstName = params.get('first_name') || '';
+    const lastName = params.get('last_name') || '';
+    const displayName = [firstName, lastName].filter(Boolean).join(' ') || username;
 
     currentUser = {
-        telegramId: user.id,
+        telegramId: id,
         username: username,
         displayName: displayName,
-        photoUrl: user.photo_url || '',
+        photoUrl: params.get('photo_url') || '',
         balance: 0,
         orders: [],
         deposits: [],
@@ -49,8 +55,12 @@ function onTelegramAuth(user) {
     }
 
     saveUser();
-    initApp();
+
+    // Clean URL params after login
+    window.history.replaceState({}, '', window.location.pathname);
 }
+
+checkTelegramRedirect();
 
 function saveUser() {
     if (!currentUser) return;
