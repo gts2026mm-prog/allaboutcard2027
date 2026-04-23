@@ -20,7 +20,7 @@ const priceMap = {
 };
 
 // ========== Google Login Config ==========
-const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE'; // Replace with your Client ID
+const GOOGLE_CLIENT_ID = '532476476244-1inc1qcsa6bqgmlt31ofa235ct0392nb.apps.googleusercontent.com';
 
 // ========== User System ==========
 let currentUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
