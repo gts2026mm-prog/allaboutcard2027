@@ -19,68 +19,38 @@ const priceMap = {
     '£10': 13, '£25': 32, '£50': 64, '€25': 28, '€50': 55,
 };
 
-// ========== User / Auth System ==========
+// ========== User System (No Login) ==========
 let currentUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
 
-// Telegram Login - check URL params on redirect back
-function checkTelegramRedirect() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    if (!id) return;
-
-    const username = params.get('username') || id;
-    const firstName = params.get('first_name') || '';
-    const lastName = params.get('last_name') || '';
-    const displayName = [firstName, lastName].filter(Boolean).join(' ') || username;
-
-    currentUser = {
-        telegramId: id,
-        username: username,
-        displayName: displayName,
-        photoUrl: params.get('photo_url') || '',
-        balance: 0,
-        orders: [],
-        deposits: [],
-        joinedAt: new Date().toISOString()
-    };
-
-    // Check if returning user (restore balance & history)
-    const saved = localStorage.getItem('aac_user_' + currentUser.telegramId);
-    if (saved) {
-        const savedData = JSON.parse(saved);
-        currentUser.balance = savedData.balance || 0;
-        currentUser.orders = savedData.orders || [];
-        currentUser.deposits = savedData.deposits || [];
-        currentUser.joinedAt = savedData.joinedAt || currentUser.joinedAt;
+function ensureUser() {
+    if (!currentUser) {
+        currentUser = {
+            telegramId: 'guest',
+            username: 'guest',
+            displayName: 'Guest',
+            photoUrl: '',
+            balance: 0,
+            orders: [],
+            deposits: [],
+            joinedAt: new Date().toISOString()
+        };
+        saveUser();
     }
-
-    saveUser();
-
-    // Clean URL params after login
-    window.history.replaceState({}, '', window.location.pathname);
 }
-
-checkTelegramRedirect();
 
 function saveUser() {
     if (!currentUser) return;
     localStorage.setItem('aac_user', JSON.stringify(currentUser));
-    localStorage.setItem('aac_user_' + currentUser.telegramId, JSON.stringify(currentUser));
 }
 
 function logout() {
     currentUser = null;
     localStorage.removeItem('aac_user');
-    document.getElementById('loginScreen').classList.remove('hidden');
-    closeUserDropdown();
+    location.reload();
 }
 
 function initApp() {
-    if (!currentUser) {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        return;
-    }
-    document.getElementById('loginScreen').classList.add('hidden');
+    ensureUser();
     updateBalanceUI();
     updateUserUI();
 }
@@ -95,17 +65,8 @@ function updateBalanceUI() {
 function updateUserUI() {
     if (!currentUser) return;
     const initial = currentUser.displayName.charAt(0).toUpperCase();
-    const avatarEl = document.getElementById('userAvatar');
-    const avatarLgEl = document.getElementById('userAvatarLg');
-
-    if (currentUser.photoUrl) {
-        avatarEl.innerHTML = `<img src="${currentUser.photoUrl}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-        avatarLgEl.innerHTML = `<img src="${currentUser.photoUrl}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-    } else {
-        avatarEl.textContent = initial;
-        avatarLgEl.textContent = initial;
-    }
-
+    document.getElementById('userAvatar').textContent = initial;
+    document.getElementById('userAvatarLg').textContent = initial;
     document.getElementById('dropdownName').textContent = currentUser.displayName;
     document.getElementById('dropdownUsername').textContent = '@' + currentUser.username;
 }
@@ -165,7 +126,7 @@ function getPrice(amount) {
 }
 
 function openOrder(productName) {
-    if (!currentUser) return;
+    ensureUser();
 
     selectedProduct = productName;
     selectedAmount = '';
@@ -295,7 +256,7 @@ let depositAmount = 0;
 let fundsCurrentStep = 1;
 
 function openAddFunds() {
-    if (!currentUser) return;
+    ensureUser();
 
     depositAmount = 0;
     fundsCurrentStep = 1;
@@ -400,7 +361,7 @@ function copyFundsAddress() {
 const orderHistoryModal = document.getElementById('orderHistoryModal');
 
 function openOrderHistory() {
-    if (!currentUser) return;
+    ensureUser();
 
     const list = document.getElementById('orderHistoryList');
 
