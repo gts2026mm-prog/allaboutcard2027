@@ -1,62 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
   <defs>
     <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6C63FF"/>
-      <stop offset="100%" style="stop-color:#3B82F6"/>
+      <stop offset="0%" style="stop-color:#1A3550"/>
+      <stop offset="50%" style="stop-color:#1B7A8E"/>
+      <stop offset="100%" style="stop-color:#2CA5B8"/>
     </linearGradient>
     <linearGradient id="cardFace" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#FFFFFF" stop-opacity="0.95"/>
-      <stop offset="100%" style="stop-color:#E0E7FF" stop-opacity="0.9"/>
+      <stop offset="100%" style="stop-color:#E0EFF5" stop-opacity="0.9"/>
     </linearGradient>
-    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#6C63FF"/>
-      <stop offset="100%" style="stop-color:#3B82F6"/>
+    <linearGradient id="swoosh" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#C8DFE8"/>
+      <stop offset="50%" style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#B8DDE6"/>
     </linearGradient>
   </defs>
 
   <!-- Shield shape -->
-  <path d="M34 6 C34 6, 56 2, 56 2 C58 1.6, 60 1.6, 62 2 L62 2 C62 2, 84 6, 84 6 C86.5 6.6, 88 8.8, 88 11.3 L88 38 C88 50, 78 60, 59 70 C59 70, 59 70, 59 70 C59 70, 59 70, 59 70 C40 60, 30 50, 30 38 L30 11.3 C30 8.8, 31.5 6.6, 34 6 Z" fill="url(#shieldGrad)"/>
+  <path d="M34 6 C34 6, 56 2, 56 2 C58 1.6, 60 1.6, 62 2 L62 2 C62 2, 84 6, 84 6 C86.5 6.6, 88 8.8, 88 11.3 L88 38 C88 50, 78 60, 59 70 C40 60, 30 50, 30 38 L30 11.3 C30 8.8, 31.5 6.6, 34 6 Z" fill="url(#shieldGrad)"/>
 
   <!-- Inner shield highlight -->
-  <path d="M37 10 C37 10, 56 6.5, 56 6.5 C58 6.1, 60 6.1, 62 6.5 L62 6.5 C62 6.5, 81 10, 81 10 C82.5 10.4, 84 11.8, 84 13.5 L84 37 C84 47.5, 75 56, 59 65 C43 56, 34 47.5, 34 37 L34 13.5 C34 11.8, 35.5 10.4, 37 10 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+  <path d="M37 10 C37 10, 56 6.5, 56 6.5 C58 6.1, 60 6.1, 62 6.5 L62 6.5 C62 6.5, 81 10, 81 10 C82.5 10.4, 84 11.8, 84 13.5 L84 37 C84 47.5, 75 56, 59 65 C43 56, 34 47.5, 34 37 L34 13.5 C34 11.8, 35.5 10.4, 37 10 Z" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
 
-  <!-- Card inside shield -->
-  <rect x="42" y="20" width="34" height="24" rx="3.5" fill="url(#cardFace)" />
-
-  <!-- Card chip -->
-  <rect x="47" y="26" width="8" height="6" rx="1.2" fill="#D4AF37" opacity="0.8"/>
-  <line x1="49" y1="26" x2="49" y2="32" stroke="#C4A030" stroke-width="0.4" opacity="0.6"/>
-  <line x1="51" y1="26" x2="51" y2="32" stroke="#C4A030" stroke-width="0.4" opacity="0.6"/>
-  <line x1="53" y1="26" x2="53" y2="32" stroke="#C4A030" stroke-width="0.4" opacity="0.6"/>
-  <line x1="47" y1="29" x2="55" y2="29" stroke="#C4A030" stroke-width="0.4" opacity="0.6"/>
-
-  <!-- Card stripe -->
-  <rect x="42" y="22.5" width="34" height="3" fill="rgba(108,99,255,0.12)"/>
-
-  <!-- Card number dots -->
-  <circle cx="48" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="51" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="54" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="57" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="62" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="65" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="68" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-  <circle cx="71" cy="38" r="0.9" fill="rgba(108,99,255,0.35)"/>
-
-  <!-- Contactless waves on card -->
-  <g transform="translate(69, 28)" opacity="0.4">
-    <path d="M0 4 A3 3 0 0 1 0 -2" fill="none" stroke="#6C63FF" stroke-width="0.7"/>
-    <path d="M1.5 5 A5 5 0 0 1 1.5 -3" fill="none" stroke="#6C63FF" stroke-width="0.7"/>
-    <path d="M3 6 A7 7 0 0 1 3 -4" fill="none" stroke="#6C63FF" stroke-width="0.7"/>
+  <!-- Back card (tilted right) -->
+  <g transform="rotate(15, 65, 28)">
+    <rect x="50" y="14" width="26" height="18" rx="2.5" fill="url(#cardFace)" stroke="rgba(27,138,158,0.2)" stroke-width="0.5"/>
+    <text x="53" y="22" font-family="Georgia,serif" font-size="7" font-weight="bold" fill="#1A3550" opacity="0.7">A</text>
+    <text x="72" y="30" font-family="Georgia,serif" font-size="5" fill="#1B8A9E" opacity="0.6">&#9824;</text>
   </g>
 
-  <!-- Checkmark at bottom of shield -->
-  <circle cx="59" cy="55" r="7" fill="rgba(255,255,255,0.2)"/>
-  <path d="M55 55 L58 58 L64 52" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Middle card (credit card, slight tilt) -->
+  <g transform="rotate(5, 59, 30)">
+    <rect x="44" y="20" width="30" height="20" rx="2.5" fill="url(#cardFace)" stroke="rgba(27,138,158,0.2)" stroke-width="0.5"/>
+    <!-- Chip -->
+    <rect x="48" y="25" width="7" height="5" rx="1" fill="#C5A55A" opacity="0.85"/>
+    <line x1="50" y1="25" x2="50" y2="30" stroke="#B8953F" stroke-width="0.3" opacity="0.5"/>
+    <line x1="52" y1="25" x2="52" y2="30" stroke="#B8953F" stroke-width="0.3" opacity="0.5"/>
+    <line x1="48" y1="27.5" x2="55" y2="27.5" stroke="#B8953F" stroke-width="0.3" opacity="0.5"/>
+    <!-- Arrow up -->
+    <path d="M62 36 L66 26 L68 30 L72 28" fill="none" stroke="#1B8A9E" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+    <path d="M66 26 L66 29 L69 27" fill="none" stroke="#1B8A9E" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+  </g>
 
-  <!-- Text: "All About" -->
-  <text x="104" y="36" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="600" fill="#4B5563" letter-spacing="-0.3">All About</text>
+  <!-- Front card (playing card, tilted left) -->
+  <g transform="rotate(-12, 50, 30)">
+    <rect x="38" y="16" width="24" height="16" rx="2" fill="url(#cardFace)" stroke="rgba(27,138,158,0.25)" stroke-width="0.5"/>
+    <text x="41" y="24" font-family="Georgia,serif" font-size="8" font-weight="bold" fill="#1A3550">A</text>
+    <!-- Suit symbols -->
+    <text x="48" y="28" font-size="4" fill="#1B8A9E" opacity="0.7">&#9829;</text>
+    <text x="53" y="28" font-size="4" fill="#1A3550" opacity="0.5">&#9827;</text>
+    <text x="48" y="22" font-size="4" fill="#C5A55A" opacity="0.6">&#9830;</text>
+  </g>
+
+  <!-- Swoosh C-curve at bottom -->
+  <path d="M42 52 Q48 62, 59 58 Q70 54, 76 48" fill="none" stroke="url(#swoosh)" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Sparkle stars -->
+  <g fill="#2CA5B8" opacity="0.7">
+    <path d="M40 14 L41 12 L42 14 L44 15 L42 16 L41 18 L40 16 L38 15 Z" transform="scale(0.5) translate(60, 10)"/>
+    <path d="M40 14 L41 12 L42 14 L44 15 L42 16 L41 18 L40 16 L38 15 Z" transform="scale(0.4) translate(190, 20)"/>
+    <path d="M40 14 L41 12 L42 14 L44 15 L42 16 L41 18 L40 16 L38 15 Z" transform="scale(0.35) translate(130, 100)"/>
+  </g>
+
+  <!-- Text: "ALL ABOUT" -->
+  <text x="104" y="33" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="17" font-weight="800" fill="#1A3550" letter-spacing="1.5">ALL ABOUT</text>
+
+  <!-- Decorative line under ALL ABOUT -->
+  <path d="M104 38 Q160 42, 220 38" fill="none" stroke="#1A3550" stroke-width="0.8" opacity="0.4"/>
 
   <!-- Text: "CARD" -->
-  <text x="104" y="60" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="800" fill="url(#textGrad)" letter-spacing="2">CARD</text>
+  <text x="140" y="60" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="26" font-weight="800" fill="#1B8A9E" letter-spacing="3">CARD</text>
 </svg>
