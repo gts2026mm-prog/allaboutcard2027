@@ -65,7 +65,7 @@ function switchPage(pageName) {
     document.getElementById(`page-${pageName}`).classList.add('active');
 
     // Update title
-    const titles = { overview: 'Overview', orders: 'Orders', products: 'Products', customers: 'Customers', settings: 'Settings' };
+    const titles = { overview: 'Overview', orders: 'Orders', deposits: 'Deposits', products: 'Products', customers: 'Customers', settings: 'Settings' };
     document.getElementById('pageTitle').textContent = titles[pageName] || pageName;
 
     // Close mobile sidebar
@@ -86,6 +86,7 @@ function renderAll() {
     renderStats();
     renderRecentOrders();
     renderOrders();
+    renderDeposits();
     renderProducts();
     renderCustomers();
 }
@@ -318,6 +319,133 @@ function renderCustomers() {
             <td>${c.lastOrder}</td>
         </tr>
     `).join('');
+}
+
+// ========== Deposits ==========
+function getDeposits() {
+    return JSON.parse(localStorage.getItem('aac_all_deposits') || '[]');
+}
+
+function saveDeposits(deposits) {
+    localStorage.setItem('aac_all_deposits', JSON.stringify(deposits));
+}
+
+function renderDeposits() {
+    const filter = document.getElementById('depositFilter').value;
+    const deposits = getDeposits();
+    const filtered = filter === 'all' ? deposits : deposits.filter(d => d.status === filter);
+    const tbody = document.getElementById('depositsBody');
+
+    // Update badge
+    const pendingCount = deposits.filter(d => d.status === 'pending').length;
+    const badge = document.getElementById('depositNavBadge');
+    if (pendingCount > 0) {
+        badge.textContent = pendingCount;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">No deposit requests</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(d => {
+        const date = new Date(d.date).toLocaleDateString();
+        const shortTx = d.txHash ? (d.txHash.length > 16 ? d.txHash.slice(0, 8) + '...' + d.txHash.slice(-6) : d.txHash) : '—';
+        return `
+        <tr>
+            <td><strong>${d.id}</strong></td>
+            <td>${d.userName || 'Unknown'}</td>
+            <td style="font-size:0.8rem;color:var(--text-muted);">${d.userEmail || '—'}</td>
+            <td><strong>$${d.amount.toFixed(2)}</strong></td>
+            <td style="font-size:0.8rem;color:var(--text-muted);" title="${d.txHash || ''}">${shortTx}</td>
+            <td><span class="badge badge-${d.status}">${capitalize(d.status)}</span></td>
+            <td>${date}</td>
+            <td>
+                <div class="actions-cell">
+                    ${d.status === 'pending' ? `
+                    <button class="action-btn" title="Approve" onclick="approveDeposit('${d.id}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                    </button>
+                    <button class="action-btn danger" title="Reject" onclick="rejectDeposit('${d.id}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>` : `<span style="color:var(--text-muted);font-size:0.8rem;">${d.status === 'approved' ? 'Credited' : 'Declined'}</span>`}
+                </div>
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
+
+function approveDeposit(depositId) {
+    const deposits = getDeposits();
+    const deposit = deposits.find(d => d.id === depositId);
+    if (!deposit || deposit.status !== 'pending') return;
+
+    // Update deposit status
+    deposit.status = 'approved';
+    saveDeposits(deposits);
+
+    // Credit the user's balance
+    if (deposit.userId) {
+        const userKey = 'aac_user_' + deposit.userId;
+        const userData = JSON.parse(localStorage.getItem(userKey) || 'null');
+        if (userData) {
+            userData.balance = Math.round((userData.balance + deposit.amount) * 100) / 100;
+            // Update deposit status in user's records too
+            const userDep = userData.deposits.find(d => d.id === depositId);
+            if (userDep) userDep.status = 'approved';
+            localStorage.setItem(userKey, JSON.stringify(userData));
+
+            // Also update current active user if same person
+            const activeUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
+            if (activeUser && activeUser.googleId === deposit.userId) {
+                activeUser.balance = userData.balance;
+                const activeDep = activeUser.deposits.find(d => d.id === depositId);
+                if (activeDep) activeDep.status = 'approved';
+                localStorage.setItem('aac_user', JSON.stringify(activeUser));
+            }
+        }
+    }
+
+    renderDeposits();
+    renderStats();
+    showToast(`Deposit ${depositId} approved — $${deposit.amount.toFixed(2)} credited`, 'success');
+}
+
+function rejectDeposit(depositId) {
+    if (!confirm('Reject this deposit request?')) return;
+
+    const deposits = getDeposits();
+    const deposit = deposits.find(d => d.id === depositId);
+    if (!deposit || deposit.status !== 'pending') return;
+
+    // Update deposit status
+    deposit.status = 'rejected';
+    saveDeposits(deposits);
+
+    // Update user's deposit record
+    if (deposit.userId) {
+        const userKey = 'aac_user_' + deposit.userId;
+        const userData = JSON.parse(localStorage.getItem(userKey) || 'null');
+        if (userData) {
+            const userDep = userData.deposits.find(d => d.id === depositId);
+            if (userDep) userDep.status = 'rejected';
+            localStorage.setItem(userKey, JSON.stringify(userData));
+
+            const activeUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
+            if (activeUser && activeUser.googleId === deposit.userId) {
+                const activeDep = activeUser.deposits.find(d => d.id === depositId);
+                if (activeDep) activeDep.status = 'rejected';
+                localStorage.setItem('aac_user', JSON.stringify(activeUser));
+            }
+        }
+    }
+
+    renderDeposits();
+    showToast(`Deposit ${depositId} rejected`, 'error');
 }
 
 // ========== Settings ==========

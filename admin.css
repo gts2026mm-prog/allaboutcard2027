@@ -370,6 +370,8 @@ tr:hover td {
 .badge-confirmed { background: var(--info-bg); color: var(--info); }
 .badge-completed { background: var(--success-bg); color: var(--success); }
 .badge-cancelled { background: var(--danger-bg); color: var(--danger); }
+.badge-approved { background: var(--success-bg); color: var(--success); }
+.badge-rejected { background: var(--danger-bg); color: var(--danger); }
 .badge-active { background: var(--success-bg); color: var(--success); }
 .badge-draft { background: #F3F4F6; color: var(--text-muted); }
 

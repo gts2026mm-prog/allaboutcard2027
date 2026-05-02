@@ -365,22 +365,24 @@ function submitDeposit() {
         return;
     }
 
-    // Save deposit record
+    // Save deposit record as pending (admin must approve)
     const deposit = {
         id: 'DEP-' + Date.now().toString(36).toUpperCase(),
         amount: depositAmount,
         txHash: txHash,
         date: new Date().toISOString(),
-        status: 'pending'
+        status: 'pending',
+        userId: currentUser.googleId,
+        userName: currentUser.displayName,
+        userEmail: currentUser.username
     };
     currentUser.deposits.unshift(deposit);
-
-    // For demo: credit balance immediately (in production, admin would verify first)
-    currentUser.balance += depositAmount;
-    currentUser.balance = Math.round(currentUser.balance * 100) / 100;
-
     saveUser();
-    updateBalanceUI();
+
+    // Also save to global pending deposits for admin
+    const allDeposits = JSON.parse(localStorage.getItem('aac_all_deposits') || '[]');
+    allDeposits.unshift(deposit);
+    localStorage.setItem('aac_all_deposits', JSON.stringify(allDeposits));
 
     // Show success
     document.getElementById('fundsSuccessAmount').textContent = '$' + depositAmount.toFixed(2);
