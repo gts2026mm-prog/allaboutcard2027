@@ -65,7 +65,7 @@ function switchPage(pageName) {
     document.getElementById(`page-${pageName}`).classList.add('active');
 
     // Update title
-    const titles = { overview: 'Overview', orders: 'Orders', deposits: 'Deposits', products: 'Products', customers: 'Customers', settings: 'Settings' };
+    const titles = { overview: 'Overview', orders: 'Orders', deposits: 'Deposits', products: 'Products', users: 'Users', settings: 'Settings' };
     document.getElementById('pageTitle').textContent = titles[pageName] || pageName;
 
     // Close mobile sidebar
@@ -88,7 +88,7 @@ function renderAll() {
     renderOrders();
     renderDeposits();
     renderProducts();
-    renderCustomers();
+    renderUsers();
 }
 
 // ========== Stats ==========
@@ -106,9 +106,8 @@ function renderStats() {
     });
     document.getElementById('statRevenue').textContent = '$' + revenue.toLocaleString();
 
-    // Unique customers
-    const uniqueCustomers = new Set(orders.map(o => o.customer));
-    document.getElementById('statCustomers').textContent = uniqueCustomers.size;
+    // Registered users count
+    document.getElementById('statCustomers').textContent = getAllUsers().length;
 }
 
 // ========== Recent Orders (Overview) ==========
@@ -290,35 +289,167 @@ function deleteProduct(id) {
     }
 }
 
-// ========== Customers ==========
-function renderCustomers() {
-    const customerMap = {};
-    orders.forEach(o => {
-        if (!customerMap[o.customer]) {
-            customerMap[o.customer] = { name: o.customer, contact: o.contact, orders: 0, spent: 0, lastOrder: o.date };
+// ========== Users ==========
+function getAllUsers() {
+    const users = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('aac_user_')) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                if (data && data.googleId) users.push(data);
+            } catch (e) {}
         }
-        customerMap[o.customer].orders++;
-        if (o.status === 'completed') {
-            const num = parseFloat(o.amount.replace(/[^0-9.]/g, ''));
-            if (!isNaN(num)) customerMap[o.customer].spent += num;
-        }
-        if (o.date > customerMap[o.customer].lastOrder) {
-            customerMap[o.customer].lastOrder = o.date;
-        }
-    });
+    }
+    return users.sort((a, b) => (b.joinedAt || '').localeCompare(a.joinedAt || ''));
+}
 
-    const customers = Object.values(customerMap).sort((a, b) => b.spent - a.spent);
-    const tbody = document.getElementById('customersBody');
+function renderUsers() {
+    const users = getAllUsers();
+    const tbody = document.getElementById('usersBody');
+    document.getElementById('usersCount').textContent = users.length + ' total';
 
-    tbody.innerHTML = customers.map(c => `
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No registered users yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+        const ordersCount = (u.orders || []).length;
+        const depositsCount = (u.deposits || []).length;
+        const joined = u.joinedAt ? new Date(u.joinedAt).toLocaleDateString() : '—';
+        const initial = (u.displayName || 'U').charAt(0).toUpperCase();
+        const avatar = u.photoUrl
+            ? `<img src="${u.photoUrl}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;vertical-align:middle;">`
+            : `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:0.8rem;">${initial}</span>`;
+        return `
         <tr>
-            <td><strong>${c.name}</strong></td>
-            <td style="color:var(--text-muted);">${c.contact}</td>
-            <td>${c.orders}</td>
-            <td>$${c.spent.toLocaleString()}</td>
-            <td>${c.lastOrder}</td>
+            <td style="white-space:nowrap;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    ${avatar}
+                    <strong>${u.displayName || 'Unknown'}</strong>
+                </div>
+            </td>
+            <td style="font-size:0.85rem;color:var(--text-muted);">${u.username || '—'}</td>
+            <td><strong style="color:var(--primary);">$${(u.balance || 0).toFixed(2)}</strong></td>
+            <td>${ordersCount}</td>
+            <td>${depositsCount}</td>
+            <td style="font-size:0.85rem;">${joined}</td>
+            <td>
+                <div class="actions-cell">
+                    <button class="action-btn" title="View Details" onclick="viewUser('${u.googleId}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+            </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
+}
+
+function viewUser(googleId) {
+    const userData = JSON.parse(localStorage.getItem('aac_user_' + googleId) || 'null');
+    if (!userData) return;
+
+    const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+    const avatar = userData.photoUrl
+        ? `<img src="${userData.photoUrl}" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover;">`
+        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:1.4rem;">${initial}</span>`;
+
+    const joined = userData.joinedAt ? new Date(userData.joinedAt).toLocaleDateString() : '—';
+
+    // Build orders history
+    let ordersHtml = '';
+    if (userData.orders && userData.orders.length > 0) {
+        ordersHtml = userData.orders.map(o => {
+            const d = new Date(o.date).toLocaleDateString();
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+                <div>
+                    <strong style="font-size:0.85rem;">${o.product}</strong>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">${o.amount} &middot; ${d}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:700;font-size:0.85rem;">-$${o.price.toFixed(2)}</div>
+                    <span class="badge badge-${o.status}" style="font-size:0.7rem;">${capitalize(o.status)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    } else {
+        ordersHtml = '<p style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">No orders yet</p>';
+    }
+
+    // Build deposits history
+    let depositsHtml = '';
+    if (userData.deposits && userData.deposits.length > 0) {
+        depositsHtml = userData.deposits.map(dep => {
+            const d = new Date(dep.date).toLocaleDateString();
+            const shortTx = dep.txHash ? (dep.txHash.length > 20 ? dep.txHash.slice(0, 10) + '...' + dep.txHash.slice(-6) : dep.txHash) : '—';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+                <div>
+                    <strong style="font-size:0.85rem;">+$${dep.amount.toFixed(2)}</strong>
+                    <div style="font-size:0.78rem;color:var(--text-muted);">TX: ${shortTx} &middot; ${d}</div>
+                </div>
+                <span class="badge badge-${dep.status}" style="font-size:0.7rem;">${capitalize(dep.status)}</span>
+            </div>`;
+        }).join('');
+    } else {
+        depositsHtml = '<p style="color:var(--text-muted);font-size:0.85rem;padding:8px 0;">No deposits yet</p>';
+    }
+
+    // Contact info
+    const contacts = [];
+    if (userData.telegram) contacts.push('Telegram: ' + userData.telegram);
+    if (userData.viber) contacts.push('Viber: ' + userData.viber);
+    if (userData.whatsapp) contacts.push('WhatsApp: ' + userData.whatsapp);
+    const contactsHtml = contacts.length > 0
+        ? contacts.map(c => `<div style="font-size:0.85rem;color:var(--text-muted);padding:2px 0;">${c}</div>`).join('')
+        : '<div style="font-size:0.85rem;color:var(--text-muted);">No contacts set</div>';
+
+    document.getElementById('userDetailContent').innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            ${avatar}
+            <div>
+                <strong style="font-size:1.1rem;">${userData.displayName || 'Unknown'}</strong>
+                <div style="font-size:0.85rem;color:var(--text-muted);">${userData.username || ''}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">Joined: ${joined}${userData.birthday ? ' &middot; Birthday: ' + userData.birthday : ''}</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+            <div style="background:var(--primary-light);padding:12px;border-radius:var(--radius-sm);text-align:center;">
+                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">$${(userData.balance || 0).toFixed(2)}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Balance</div>
+            </div>
+            <div style="background:var(--primary-light);padding:12px;border-radius:var(--radius-sm);text-align:center;">
+                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">${(userData.orders || []).length}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Orders</div>
+            </div>
+            <div style="background:var(--primary-light);padding:12px;border-radius:var(--radius-sm);text-align:center;">
+                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">${(userData.deposits || []).length}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Deposits</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <strong style="font-size:0.9rem;">Contacts</strong>
+            ${contactsHtml}
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <strong style="font-size:0.9rem;">Order History</strong>
+            <div style="max-height:200px;overflow-y:auto;">${ordersHtml}</div>
+        </div>
+
+        <div>
+            <strong style="font-size:0.9rem;">Deposit History</strong>
+            <div style="max-height:200px;overflow-y:auto;">${depositsHtml}</div>
+        </div>
+    `;
+    document.getElementById('userDetailModal').classList.add('active');
+}
+
+function closeUserDetail() {
+    document.getElementById('userDetailModal').classList.remove('active');
 }
 
 // ========== Deposits ==========
