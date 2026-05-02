@@ -340,6 +340,9 @@ function renderUsers() {
                     <button class="action-btn" title="View Details" onclick="viewUser('${u.googleId}')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </button>
+                    <button class="action-btn" title="Adjust Balance" onclick="adjustBalance('${u.googleId}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B8A9E" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </button>
                 </div>
             </td>
         </tr>
@@ -417,8 +420,9 @@ function viewUser(googleId) {
 
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
             <div style="background:var(--primary-light);padding:12px;border-radius:var(--radius-sm);text-align:center;">
-                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">$${(userData.balance || 0).toFixed(2)}</div>
+                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);" id="userDetailBalance">$${(userData.balance || 0).toFixed(2)}</div>
                 <div style="font-size:0.75rem;color:var(--text-muted);">Balance</div>
+                <button class="btn btn-primary btn-sm" style="margin-top:6px;padding:4px 12px;font-size:0.75rem;" onclick="adjustBalance('${userData.googleId}')">Adjust</button>
             </div>
             <div style="background:var(--primary-light);padding:12px;border-radius:var(--radius-sm);text-align:center;">
                 <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">${(userData.orders || []).length}</div>
@@ -450,6 +454,62 @@ function viewUser(googleId) {
 
 function closeUserDetail() {
     document.getElementById('userDetailModal').classList.remove('active');
+}
+
+function adjustBalance(googleId) {
+    const userKey = 'aac_user_' + googleId;
+    const userData = JSON.parse(localStorage.getItem(userKey) || 'null');
+    if (!userData) return;
+
+    const input = prompt(
+        `Current balance: $${(userData.balance || 0).toFixed(2)}\n\nEnter amount to adjust:\n  Positive number to ADD (e.g. 50)\n  Negative number to DEDUCT (e.g. -25)\n  Or enter exact balance with = (e.g. =100)`,
+        ''
+    );
+    if (input === null || input.trim() === '') return;
+
+    const trimmed = input.trim();
+    let newBalance;
+
+    if (trimmed.startsWith('=')) {
+        // Set exact balance
+        const exact = parseFloat(trimmed.slice(1));
+        if (isNaN(exact) || exact < 0) {
+            showToast('Invalid amount', 'error');
+            return;
+        }
+        newBalance = exact;
+    } else {
+        // Add or subtract
+        const amount = parseFloat(trimmed);
+        if (isNaN(amount)) {
+            showToast('Invalid amount', 'error');
+            return;
+        }
+        newBalance = (userData.balance || 0) + amount;
+        if (newBalance < 0) newBalance = 0;
+    }
+
+    newBalance = Math.round(newBalance * 100) / 100;
+    userData.balance = newBalance;
+    localStorage.setItem(userKey, JSON.stringify(userData));
+
+    // Also update active user session if same person
+    const activeUser = JSON.parse(localStorage.getItem('aac_user') || 'null');
+    if (activeUser && activeUser.googleId === googleId) {
+        activeUser.balance = newBalance;
+        localStorage.setItem('aac_user', JSON.stringify(activeUser));
+    }
+
+    renderUsers();
+    renderStats();
+
+    // Update detail modal if open
+    const detailBalance = document.getElementById('userDetailBalance');
+    if (detailBalance) {
+        detailBalance.textContent = '$' + newBalance.toFixed(2);
+    }
+
+    showToast(`Balance updated to $${newBalance.toFixed(2)} for ${userData.displayName}`, 'success');
 }
 
 // ========== Deposits ==========
